@@ -1,14 +1,19 @@
 var _ = require("lodash");
 
-var worker = function(cities){
-  return _.forEach(cities, function(city) {
-    if (city.population > 1.0){
-      city.size = "big";
-    } else if (1.0 > city.population && city.population > 0.5) {
-      city.size = "med";
-    } else {
-      city.size = "small";
-    };
-  });
-};
-module.exports = worker;
+var worker = function(cities) {
+  var cityNames = Object.keys(cities);
+  var isHot = function(temp){
+    return temp > 19;
+  }
+  var hot = cityNames.filter(function (cityName){
+    var temps = cities[cityName];
+    return _.every(temps, isHot);
+  })
+
+  var warm = cityNames.filter(function (cityName){
+    var temps = cities[cityName];
+    return _.some(temps, isHot) && !_.every(temps, isHot);
+  })
+  return { hot: hot, warm: warm };
+}
+module.exports = worker
